@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <Stdlib.h>
+#include <stdlib.h>
 
 typedef enum {
     SIZE_OF_MATRIX,
@@ -189,7 +189,7 @@ void minimize_cost(int** C, int** R, int* work_array, int index) {
     int cost = 0;
 
     if (index == g_number_of_works-1) {
-        for (int j = 0; j < g_number_of_people; j++) {
+        for (int j = 0; j < g_number_of_works; j++) {
             cost += C[work_array[j]][j];
         }
         if (g_cost == 0) {
@@ -231,12 +231,8 @@ int valid_combination(int* work_array, int** R) {
 
 void all_combinations(int** C, int** R, int* people_array, int* work_array, int start, int end, int index, int comb_size) {
     if (index == comb_size) {
-        if (valid_combination(work_array, R)) {
+        if (valid_combination(work_array, R) == 1) {
             minimize_cost(C, R, work_array, 0);
-/*            for (int i = 0; i < comb_size; i++) {
-                printf("%d ", work_array[i]);
-            }
-*/
         }
         return;
     }
