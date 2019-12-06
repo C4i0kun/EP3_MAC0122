@@ -311,3 +311,21 @@ int main() {
 
     return 0;
 }
+
+/*
+BREVE EXPLICAÇÃO:
+
+O programa lê os arquivos TXT e cria, inicialmente, 2 matrizes e 2 arrays:
+    - C_matrix = é a matriz que relaciona o funcionário ao seu custo de trabalho;
+    - R_matrix = é a matriz que relaciona as restrições de trabalho;
+    - Work_Array = é um array auxiliar criado no qual a posição work_array[i] denota o número do indivíduo que trabalhará na posição "i";
+    - People_Array = é um array auxiliar criado com todos os individuos de 0 a N-1. Cada indivíduo recebe uma numeração correspondente.
+
+Além disso, existem as variáveis globais, que estão marcadas com um "g_" antes de seus nomes. o g_cost e o g_work_array são as variáveis que serão
+impressas no final do programa.
+
+Após a criação de todos esses arrays/matrizes, o programa calculará todas as possíveis combinações de individuos por meio da função "all_combinations".
+Caso a combinação de funcionários seja válida, o programa a permutará procurando o menor custo por meio da função "minimize_cost". O menor custo será
+guardado na variável g_cost, bem como a formação correspondente no array g_work_array.
+Por fim, o programa imprime conforme os padrões do EP.
+*/
