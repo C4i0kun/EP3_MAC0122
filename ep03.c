@@ -1,3 +1,9 @@
+/*
+Aluno: Caio de Souza Barbosa Costa    NUSP: 11257734
+
+PS: Há um breve READM ao final desse código
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
