@@ -54,6 +54,16 @@ void print_result() {
     printf("%d\n", g_cost);
 }
 
+void free_matrix(int **matrix, int lines, int columns) {
+    for (int i = 0; i < lines; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+}
+
+void free_array(int *array) {
+    free(array);
+}
 
 /**************************************************/
 /********** MATRIX CREATION FUNCTIONS *************/
@@ -243,6 +253,34 @@ void all_combinations(int** C, int** R, int* people_array, int* work_array, int 
     }
 }
 
+/**************************************************/
+/********** MATRIX DESTRUCTION FUNCTIONS **********/
+/**************************************************/
+
+void destroy_c_matrix(int** c_matrix) {
+    free_matrix(c_matrix, g_number_of_people, g_number_of_works);
+}
+
+void destroy_r_matrix(int** r_matrix) {
+    free_matrix(r_matrix, g_number_of_people, g_number_of_people);
+}
+
+void destroy_work_array(int* work_array) {
+    free_array(work_array);
+}
+
+void destroy_people_array(int* people_array) {
+    free_array(people_array);
+}
+
+void destroy_all(int **c_matrix, int** r_matrix, int* work_array, int* g_work_array, int* people_array) {
+    destroy_c_matrix(c_matrix);
+    destroy_r_matrix(r_matrix);
+    destroy_work_array(work_array);
+    destroy_work_array(g_work_array);
+    destroy_people_array(people_array);
+}
+
 
 /**************************************************/
 /********************* MAIN ***********************/
@@ -268,6 +306,8 @@ int main() {
 
     all_combinations(C, R, people_array, work_array, 0, g_number_of_people, 0, g_number_of_works);
     print_result();
+
+    destroy_all(C, R, work_array, g_work_array, people_array);
 
     return 0;
 }
