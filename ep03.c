@@ -14,6 +14,7 @@ typedef enum {
 int g_cost = 0;
 int g_number_of_works = 0;
 int g_number_of_people = 0;
+int* g_work_array;
 
 
 /**************************************************/
@@ -36,6 +37,21 @@ int** allocate_matrix(int lines, int columns) {
 int* allocate_array(int size) {
     int *array = (int *)malloc(size * sizeof(int));
     return array;
+}
+
+void change_array_positions(int *array, int pos_a, int pos_b) {
+    int tmp = array[pos_a];
+    array[pos_a] = array[pos_b];
+    array[pos_b] = tmp;
+}
+
+void print_result() {
+    for (int i = 0; i < g_number_of_works; i++) {
+        printf("(T:%d F:%d) ", i, g_work_array[i]);
+    }
+    
+    printf("= ");
+    printf("%d\n", g_cost);
 }
 
 
@@ -168,27 +184,66 @@ int* create_people_array(int size) {
 /********** MATRIX COMPARISON FUNCTIONS ***********/
 /**************************************************/
 
-/* Returns 1 if the work restriction is accomplished */
-int restriction_accomplished(int line, int column, int **R) {
-    if (R[line-1][column-1] == 1) {
-        return 0;
+void minimize_cost(int** C, int** R, int* work_array, int index) {
+    int i = 0;
+    int cost = 0;
+
+    if (index == g_number_of_works-1) {
+        for (int j = 0; j < g_number_of_people; j++) {
+            cost += C[work_array[j]][j];
+        }
+        if (g_cost == 0) {
+            g_cost = cost;
+            for (int k = 0; k < g_number_of_works; k++) {
+                g_work_array[k] = work_array[k];
+            }
+        } else {
+            if (cost < g_cost) {
+                g_cost = cost;
+                for (int k = 0; k < g_number_of_works; k++) {
+                    g_work_array[k] = work_array[k];
+                }
+            }
+        }
+
+    } else {
+        for (i = index; i < g_number_of_works; i++) {
+            change_array_positions(work_array, i, index);
+            minimize_cost(C, R, work_array, index + 1);
+            change_array_positions(work_array, i, index);
+        }
+    }
+
+
+}
+
+int valid_combination(int* work_array, int** R) {
+    for (int i = 0; i < g_number_of_works; i++) {
+        for (int j = i + 1; (j < g_number_of_works) && (j > i); j++) {
+            if(R[work_array[i]][work_array[j]] == 1) {
+                return 0;
+            }
+        }
     }
 
     return 1;
 }
 
-void all_combinations(int* people_array, int* work_array, int start, int end, int index, int comb_size) {
+void all_combinations(int** C, int** R, int* people_array, int* work_array, int start, int end, int index, int comb_size) {
     if (index == comb_size) {
-        for (int i = 0; i < comb_size; i++) {
-            printf("%d ", work_array[i]);
+        if (valid_combination(work_array, R)) {
+            minimize_cost(C, R, work_array, 0);
+/*            for (int i = 0; i < comb_size; i++) {
+                printf("%d ", work_array[i]);
+            }
+*/
         }
-        printf("\n");
         return;
     }
 
     for (int j = start; (j < end) && ((end - j + 1) >= (comb_size - index)); j++) {
         work_array[index] = people_array[j];
-        all_combinations(people_array, work_array, j+1, end, index+1, comb_size);
+        all_combinations(C, R, people_array, work_array, j+1, end, index+1, comb_size);
     }
 }
 
@@ -213,8 +268,10 @@ int main() {
     int *work_array = create_work_array(g_number_of_works);
     int *people_array = create_people_array(g_number_of_people);
 
-    printf("%d\n", restriction_accomplished(3,1, R));
-    all_combinations(people_array, work_array, 0, g_number_of_people, 0, g_number_of_works);
+    g_work_array = create_work_array(g_number_of_works);
+
+    all_combinations(C, R, people_array, work_array, 0, g_number_of_people, 0, g_number_of_works);
+    print_result();
 
     return 0;
 }
