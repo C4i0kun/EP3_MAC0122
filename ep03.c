@@ -7,6 +7,14 @@ typedef enum {
     R_MATRIX
 } reading_mode; 
 
+/**************************************************/
+/*************** GLOBAL VARIABLES *****************/
+/**************************************************/
+
+int g_cost = 0;
+int g_number_of_works = 0;
+int g_number_of_people = 0;
+
 
 /**************************************************/
 /*************** USEFUL FUNCTIONS *****************/
@@ -22,6 +30,11 @@ int** allocate_matrix(int lines, int columns) {
     for (int i = 0; i < lines; i++) {
         array[i] = (int *)malloc(columns * sizeof(int));
     }
+    return array;
+}
+
+int* allocate_array(int size) {
+    int *array = (int *)malloc(size * sizeof(int));
     return array;
 }
 
@@ -135,12 +148,49 @@ int** create_r_matrix (char file[], int size) {
     return r_matrix;
 }
 
+int* create_work_array(int size) {
+    int* array = allocate_array(size);
+    return array;
+}
+
+int* create_people_array(int size) {
+    int *array = allocate_array(size);
+
+    for (int i = 0; i < size; i++) {
+        array[i] = i;
+    }
+
+    return array;
+}
+
 
 /**************************************************/
 /********** MATRIX COMPARISON FUNCTIONS ***********/
 /**************************************************/
 
+/* Returns 1 if the work restriction is accomplished */
+int restriction_accomplished(int line, int column, int **R) {
+    if (R[line-1][column-1] == 1) {
+        return 0;
+    }
 
+    return 1;
+}
+
+void all_combinations(int* people_array, int* work_array, int start, int end, int index, int comb_size) {
+    if (index == comb_size) {
+        for (int i = 0; i < comb_size; i++) {
+            printf("%d ", work_array[i]);
+        }
+        printf("\n");
+        return;
+    }
+
+    for (int j = start; (j < end) && ((end - j + 1) >= (comb_size - index)); j++) {
+        work_array[index] = people_array[j];
+        all_combinations(people_array, work_array, j+1, end, index+1, comb_size);
+    }
+}
 
 
 /**************************************************/
@@ -154,10 +204,17 @@ int main() {
 
     int lines = get_number_of_lines(file);
     int columns = get_number_of_columns(file);
-    int **C = create_c_matrix(file, lines, columns)
+
+    g_number_of_people = lines;   
+    g_number_of_works = columns;
+
+    int **C = create_c_matrix(file, lines, columns);
     int **R = create_r_matrix(file, lines);
+    int *work_array = create_work_array(g_number_of_works);
+    int *people_array = create_people_array(g_number_of_people);
 
-
+    printf("%d\n", restriction_accomplished(3,1, R));
+    all_combinations(people_array, work_array, 0, g_number_of_people, 0, g_number_of_works);
 
     return 0;
 }
